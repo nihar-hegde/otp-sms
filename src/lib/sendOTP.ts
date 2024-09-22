@@ -7,7 +7,7 @@ const vonage = new Vonage({
 });
 
 export async function sendSMS(to: string, text: string) {
-  const from = process.env.VONAGE_FROM_NUMBER || "Vonage APIs";
+  const from = "Vonage APIs";
 
   try {
     const resp = await vonage.sms.send({ to, from, text });
