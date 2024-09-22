@@ -1,31 +1,52 @@
+// src/components/message-list.tsx
 "use client";
+
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { useMessages } from "@/hooks/use-messages";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function MessageList() {
   const [page, setPage] = useState(1);
   const { data, isLoading, error } = useMessages(page);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>An error occurred: {error.message}</div>;
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {[...Array(5)].map((_, i) => (
+          <Skeleton key={i} className="h-24 w-full" />
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-red-500">
+        An error occurred: {error.message}
+      </div>
+    );
+  }
 
   return (
     <div>
-      <ul className="space-y-4">
+      <div className="space-y-4">
         {data?.messages.map((message) => (
-          <li key={message.id} className=" shadow rounded-lg p-4">
-            <p className="font-bold">
-              To: {message.contact.firstName} {message.contact.lastName}
-            </p>
-            <p>OTP: {message.otp}</p>
-            <p className="text-sm text-gray-500">
-              Sent at: {new Date(message.sentAt).toLocaleString()}
-            </p>
-          </li>
+          <Card key={message.id}>
+            <CardContent className="p-4">
+              <h3 className="font-semibold">
+                To: {message.contact.firstName} {message.contact.lastName}
+              </h3>
+              <p className="text-sm">OTP: {message.otp}</p>
+              <p className="text-xs text-gray-500">
+                Sent at: {new Date(message.sentAt).toLocaleString()}
+              </p>
+            </CardContent>
+          </Card>
         ))}
-      </ul>
-      <div className="mt-4 flex justify-between">
+      </div>
+      <div className="mt-6 flex justify-between">
         <Button
           onClick={() => setPage((p) => Math.max(1, p - 1))}
           disabled={page === 1}
